@@ -12,14 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c72fed0943b794eab6c959d76a1bd1, type: 3}
   m_Name: PFCDroneKit
   m_EditorClassIdentifier: 
-  nextVersion: 3.3.0.4
-  _version: 3.3.0.4
-  _latestVersion: 3.3.0.3
+  nextVersion: 3.3.0.5
+  _version: 3.3.0.5
+  _latestVersion: 3.3.0.4
   owner: brandonvdongen
-  repo: ProjectVersions
+  repo: PFC.DroneKit
   token: 
-  assetPaths:
+  FilePaths:
   - Assets/PFCTools
   - Assets/PFCDroneKit
-  changelog: 
-  packageUrl: https://github.com/brandonvdongen/ProjectVersions/releases/download/3.3.0.3/PFCDroneKit.unitypackage
+  changelog: '3.3.0.5
+
+    - Updated to this fancy new installer and update system
+    for future updates!'
+  packageUrl: https://github.com/brandonvdongen/ProjectVersions/releases/download/3.3.0.4/PFCDroneKit.unitypackage
