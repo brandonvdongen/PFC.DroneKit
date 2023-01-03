@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -340790334, guid: 67cc4cb7839cd3741b63733d5adf0442, type: 3}
+  m_Name: MENU_MODES
+  m_EditorClassIdentifier: 
+  controls:
+  - name: Follow
+    icon: {fileID: 2800000, guid: 216a652ae3fabb04a9e9dc38d1167a6f, type: 3}
+    type: 102
+    parameter:
+      name: Drone/Core/Mode
+    value: 2
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: Mirror
+    icon: {fileID: 2800000, guid: 8075cce073bb4d94cb467c5a1801f866, type: 3}
+    type: 102
+    parameter:
+      name: Drone/Core/Mode
+    value: 3
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: Minimap
+    icon: {fileID: 2800000, guid: bfe00a7e30e24a84190fe5ec65a1195f, type: 3}
+    type: 102
+    parameter:
+      name: Drone/Core/Mode
+    value: 4
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: Stay
+    icon: {fileID: 2800000, guid: 8ec384656f735c248a1c4a6c76a6fef3, type: 3}
+    type: 102
+    parameter:
+      name: Drone/Core/Mode
+    value: 1
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: Remote
+    icon: {fileID: 2800000, guid: f49f9990c8881464cbf7789677ed74ac, type: 3}
+    type: 201
+    parameter:
+      name: Drone/Core/Mode
+    value: 5
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters:
+    - name: Drone/Core/Rotate
+    - name: Drone/Core/Forward
+    labels:
+    - name: Forward
+      icon: {fileID: 0}
+    - name: Turn Right
+      icon: {fileID: 0}
+    - name: Backward
+      icon: {fileID: 0}
+    - name: Turn Left
+      icon: {fileID: 0}

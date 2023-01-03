@@ -1,0 +1,61 @@
+
+This document details all the menu options and some of the more hidden features of the drone. 
+
+
+1. Camera Settings
+2. Camera Modes
+3. Flight Modes
+4. Flight Controls
+
+****Camera Settings****
+[Light] Enables the light on the drone's camera.
+
+[Hud] Opens up the Full Heads up display camera view.
+
+[Zoom] Allows the user to change the FOV of the drone 
+
+****Camera Modes****
+The camera comes with 2 options to change it's behaviour and by combining these options the user can achieve 4 different behaviours.
+
+[Headtracking Mode] Headtracking on, Camlock off: Camera Always looks in players current look direction. allowing for full 360 view in any mode at any point.
+
+[Forward Mode] Headtracking off, Camlock on: Camera looks straight forward in drone's forward direction ignoring the player's looking direction completely.
+
+[Pilot Mode] Headtracking on, Camlock on: Camera locks forward but still tracks the user looking up/down. This matches the original 1.x and 2.x behavior. 
+
+[Stationary]Headtracking off, Camlock off: Camera remains in whatever it's current orientation is relative to the drone. Best used in combination with the Gimbal Controls. 
+
+****Drone Dock****
+The wrist mounted drone dock functions as a landing pad for the drone as well as featuring a flip screen that shows the drone's pov when not using the Hud.
+To open the flip screen use an open hand on either left or right hand while the drone is in flight. 
+
+****Flight Modes****
+The drone comes preset with 5 different flight modes for you to use:
+
+[Follow] The drone will stay with your avatar at the given Follow point Facing the same direction as the user.
+
+[Mirror] The drone will position itself infront of the user's face or the custom target and follow them at configurable distance. 
+this mode is designed to be used in combination with the locked camera and the HUD to face the user to function as a impromptu pocket mirror.
+
+[Minimap] The Drone will take off and position itself at 50m above the user and show a top down view of the world with a configurable cutoff above the user, allowing it to see through ceilings of buildings to give a proper indoor minimap.
+
+[Stay] The Drone will stay in place unmoving. 
+
+[Remote] The Drone wil enter a state in which the user gets full remote control over the drone allowing for manual control of the drone's flight. see Remote Mode for more detailed instructions. 
+
+
+****Flight Controls****
+In Remote Mode the drone wil give full control to the user about it's movement (note. due to VRChat limitations, the position of the drone is not synchronized between players)
+
+The behaviour of how the drone flies is affected by what camera mode is used as well as certain hand gestures
+
+when piloting the drone it will always see the camera's facing direction as it's forward.
+this means that when looking down in headtracking modes 'up' becomes 'forward' for example.
+
+Some Tips and usefull notes:
+
+[Level Flight] when the camera is set to CamLock only the drone wil always fly perfectly level. this is usefull when flying the drone without the hud. 
+
+[Strafe Mode] By using Fingerpoint on either the left or right hand during flight will swap the forward/backward/rotating controls of the remote menu control to a up/down/left/right strafe instead. (relative to the camera)
+
+[Auto alignment] When using remote mode with Headlock cam only the drone wil automatically rotate to match it's facing direction.
