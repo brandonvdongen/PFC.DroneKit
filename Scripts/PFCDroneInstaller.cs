@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PFCTools2.Utils.VersionManager;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -60,7 +61,17 @@ namespace PFCTools.Drone {
         public GameObject MapPoint;
         public GameObject MapCutoff;
 
+        private bool HidTools = false;
+
         public SkinnedMeshRenderer DockRenderer = null;
+
+        private void OnEnable() {
+            SceneView.duringSceneGui += PerformHandleChecks;
+        }
+
+        private void OnDisable() {
+            SceneView.duringSceneGui -= PerformHandleChecks;
+        }
 
         public void Update() {
             if (descriptor == null) {
@@ -75,7 +86,8 @@ namespace PFCTools.Drone {
             if (descriptor != null) {
                 if (animator == null) {
                     animator = descriptor.gameObject.GetComponent<Animator>();
-                } else {
+                }
+                else {
                 }
             }
             if (DroneRenderer == null && DroneModel != null) {
@@ -184,7 +196,8 @@ namespace PFCTools.Drone {
 
                         parent = customMountPoint;
                     }
-                } else {
+                }
+                else {
                     if (selectedMountPoint == (int)SimpleMountPoints.LeftHanded) {
                         parent = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
                         secondaryBone = animator.GetBoneTransform(HumanBodyBones.LeftHand);
@@ -335,7 +348,6 @@ namespace PFCTools.Drone {
             }
         }
 
-
         public bool hudHasEmission() {
             if (HudRenderer == null) {
                 return false;
@@ -356,11 +368,15 @@ namespace PFCTools.Drone {
         */
 
         private void OnDrawGizmos() {
-            if (Prefab == null) return;
+            if (Prefab == null) {
+                return;
+            }
+
             if (Selection.activeGameObject == HudLink || visualizeMarkers == true) {
                 if (hudHasEmission()) {
                     Gizmos.color = HudEmissionColor;
-                } else {
+                }
+                else {
                     Gizmos.color = new Color(0, 0.5f, 1, 0.5f);
                 }
 
@@ -386,6 +402,46 @@ namespace PFCTools.Drone {
                 Gizmos.DrawCube(pos, new Vector3(1, 0.001f, 1));
 
                 Handles.Label(MapPoint.transform.position, $"Minimap Camera Target ({MapPoint.transform.position.y})m");
+            }
+        }
+
+        private void PerformHandleChecks(SceneView scene) {
+            if (DockOffset == null) {
+                return;
+            }
+
+            if (Selection.activeObject == Prefab) {
+                if (Tools.hidden == false) {
+                    Tools.hidden = true;
+                    HidTools = true;
+                }
+
+                Vector3 handlePos = DockOffset.transform.position;
+                Quaternion handleRot = Tools.pivotRotation == PivotRotation.Local ? DockOffset.transform.rotation : Quaternion.identity;
+
+                if (Tools.current == Tool.Move) {
+                    DockOffset.transform.position = Handles.DoPositionHandle(handlePos, handleRot);
+                }
+                else if (Tools.current == Tool.Rotate) {
+                    DockOffset.transform.rotation = Handles.DoRotationHandle(DockOffset.transform.rotation, handlePos);
+                }
+                else if (Tools.current == Tool.Scale) {
+                    Vector3 oldScale = DockOffset.transform.localScale;
+                    Vector3 newScale = Handles.DoScaleHandle(DockOffset.transform.localScale, handlePos, handleRot, HandleUtility.GetHandleSize(DockOffset.transform.position));
+                    if (newScale.magnitude > oldScale.magnitude) {
+                        float maxScale = Mathf.Max(newScale.x, newScale.y, newScale.z);
+                        newScale = new Vector3(maxScale, maxScale, maxScale);
+                    }
+                    else {
+                        float minScale = Mathf.Min(newScale.x, newScale.y, newScale.z);
+                        newScale = new Vector3(minScale, minScale, minScale);
+                    }
+                    DockOffset.transform.localScale = newScale;
+                }
+            }
+            else if (HidTools) {
+                Tools.hidden = false;
+                HidTools = false;
             }
         }
     }

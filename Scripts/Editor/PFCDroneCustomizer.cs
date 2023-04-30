@@ -35,37 +35,41 @@ namespace PFCTools.Drone {
                     customizer = Selection.activeGameObject.GetComponent<PFCDroneInstaller>();
                     this.Repaint();
                 }
-            } else if (customizer.gameObject == null) {
+            }
+            else if (customizer.gameObject == null) {
                 return;
-            } else if (customizer.descriptor == null) {
+            }
+            else if (customizer.descriptor == null) {
                 GUILayout.Label("No Avatar Descriptor found, Please make sure the prefab is parented to your model.\n" +
                     "(it doesn't matter where. the script will ensure everything is in the correct place by the end.\n" +
                     "it just needs to be somewhere on the model you want to intall it on.)\n\n" +
                     "Please drag the prefab anywhere onto the model you want to install it on and then click back on this window to continue.", label);
-            } else {
+            }
+            else {
 
-                GUILayout.BeginHorizontal(EditorStyles.toolbar);
+                if (customizer.Prefab != null) {
+                    GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-                if (GUILayout.Button("Restart Setup", EditorStyles.toolbarButton)) {
-                    customizer.currentCustomizerWindow = CustomizerWindows.ModeSelect;
-                    customizer.selectedMountPoint = (int)AdvancedMountPoints.SelectAMountPoint;
-                }
+                    if (GUILayout.Button("Restart Setup", EditorStyles.toolbarButton)) {
+                        customizer.currentCustomizerWindow = CustomizerWindows.ModeSelect;
+                        customizer.selectedMountPoint = (int)AdvancedMountPoints.SelectAMountPoint;
+                    }
 
-                GUILayout.FlexibleSpace();
-                customizer.visualizeMarkers = GUILayout.Toggle(customizer.visualizeMarkers, new GUIContent("", EditorGUIUtility.IconContent("d_scenevis_visible_hover").image, "Toggle All Visualization"), EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
-                customizer.AutoCam = GUILayout.Toggle(customizer.AutoCam, new GUIContent("", EditorGUIUtility.IconContent("Camera Icon").image, "Enable Automatic Camera Movement"), EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
+                    GUILayout.FlexibleSpace();
+                    customizer.visualizeMarkers = GUILayout.Toggle(customizer.visualizeMarkers, new GUIContent("", EditorGUIUtility.IconContent("d_scenevis_visible_hover").image, "Toggle All Visualization"), EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
+                    customizer.AutoCam = GUILayout.Toggle(customizer.AutoCam, new GUIContent("", EditorGUIUtility.IconContent("Camera Icon").image, "Enable Automatic Camera Movement"), EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
 
-                if (GUILayout.Button("Remove Drone", EditorStyles.toolbarButton)) {
-                    if (EditorUtility.DisplayDialog("Remove Drone", "Are you sure you want to remove the drone from your avatar?", "Delete it all!", "Cancel")) {
-                        Selection.activeObject = null;
-                        customizer.removeAllDroneComponents();
-                        if (EditorUtility.DisplayDialog("Animation layers removal", "We'll now show the animator installation step once more so you can use it to remove the non-prefab parts of your model, hitting finish on the installer at this point will result in the window closing", "Ok")) {
-                            customizer.currentCustomizerWindow = CustomizerWindows.InstallAnimators;
+                    if (GUILayout.Button("Remove Drone", EditorStyles.toolbarButton)) {
+                        if (EditorUtility.DisplayDialog("Remove Drone", "Are you sure you want to remove the drone from your avatar?", "Delete it all!", "Cancel")) {
+                            Selection.activeObject = null;
+                            customizer.removeAllDroneComponents();
+                            if (EditorUtility.DisplayDialog("Animation layers removal", "We'll now show the animator installation step once more so you can use it to remove the non-prefab parts of your model, hitting finish on the installer at this point will result in the window closing", "Ok")) {
+                                customizer.currentCustomizerWindow = CustomizerWindows.InstallAnimators;
+                            }
                         }
                     }
+                    GUILayout.EndHorizontal();
                 }
-                GUILayout.EndHorizontal();
-
                 //Installer Steps
 
                 //Mode Select
@@ -112,8 +116,9 @@ namespace PFCTools.Drone {
                         EditorGUI.BeginDisabledGroup(!(Enum.IsDefined(typeof(AdvancedMountPoints), selection) && selection != AdvancedMountPoints.Custom || (selection == AdvancedMountPoints.Custom && customizer.customMountPoint != null)));
                         ConfirmMountPoint();
                         EditorGUI.EndDisabledGroup();
-                    } else //if simple mode
-                      {
+                    }
+                    else //if simple mode
+                    {
                         SimpleMountPoints selection = (SimpleMountPoints)customizer.selectedMountPoint;
                         selection = (SimpleMountPoints)EditorGUILayout.EnumPopup("Left or Right handed?", selection);
                         customizer.selectedMountPoint = (int)selection;
@@ -130,7 +135,12 @@ namespace PFCTools.Drone {
 
                 if (customizer.currentCustomizerWindow == CustomizerWindows.InstallAnimators) {
                     customizer.UpdateExpressionMenus();
-                    PageHeader(new string[] { "Merge animator data", "3/3" });
+                    if (customizer.Prefab == null) {
+                        PageHeader(new string[] { "Asset Removal" });
+                    }
+                    else {
+                        PageHeader(new string[] { "Merge animator data", "3/3" });
+                    }
 
                     #region WDCheck
                     if (customizer.FXWDState.HasFlag(AnimatorWDState.Mixed)) {
@@ -141,11 +151,11 @@ namespace PFCTools.Drone {
 
                         if (customizer.advancedMode) {
                             GUILayout.Label($"<color=red><b>WARNING:</b></color> Write Default States are <b>Mixed</b>. If this is intended feel free to ignore this.", label);
-                        } else {
-                            GUILayout.Label($"<color=red><b>WARNING:</b></color> Write Default States are <b>Mixed</b>.\nBased on the animator we assumed it's meant to be <Color=cyan>{assumption}</color>\nIf this is not the case, please check your animator or use the auto fix below.\n If you know what you're doing feel free to ignore this.", label);
+                        }
+                        else {
+                            GUILayout.Label($"<color=red><b>WARNING:</b></color> Write Default States are <b>Mixed</b>.\nBased on the animator we assumed it's meant to be <Color=cyan>{assumption}</color>\nIf this is not the case, please check your animator or use the auto fix below.\nIf you know what you're doing feel free to ignore this.", label);
                         }
 
-                        PFCGUI.HorizontalLine();
                         GUILayout.BeginHorizontal();
                         GUILayout.Label("Autofix Write Defaults:");
                         if (GUILayout.Button("Force WD On")) {
@@ -165,9 +175,11 @@ namespace PFCTools.Drone {
                         }
 
                         GUILayout.EndHorizontal();
+                        PFCGUI.HorizontalLine();
                     }
                     #endregion
                     #region advanced mode
+                    /*
                     if (customizer.advancedMode) {
                         EasyImportButton(label, false);
                         #region WD Toggle
@@ -177,7 +189,8 @@ namespace PFCTools.Drone {
                             if (customizer.DroneWDState.HasFlag(AnimatorWDState.On)) {
                                 WDConverter.SetWriteDefaults(customizer.droneAnimationController, false);
                                 customizer.DroneWDState = AnimatorWDState.Off;
-                            } else {
+                            }
+                            else {
                                 WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
                                 customizer.DroneWDState = AnimatorWDState.On;
                             }
@@ -214,77 +227,107 @@ namespace PFCTools.Drone {
                         EditorGUILayout.EndHorizontal();
                         #endregion
                     }
+                    */
                     #endregion
                     #region simple mode
-                    else {
-                        EasyImportButton(label, true);
+                    //else {
 
-                        if (!customizer.ExpressionMenus.ContainsKey(customizer.droneExpMenu)) {
-                            PFCGUI.HorizontalLine();
-                            GUILayout.Label("<b>Import Menu</b>:\nPlease select which sub menu you'd like to have your drone menu placed in.", label);
-                            foreach (KeyValuePair<VRCExpressionsMenu, ExpressionMenuData> kvp in customizer.ExpressionMenus) {
-                                VRCExpressionsMenu subMenu = kvp.Key;
-                                string name = kvp.Value.Name;
-                                if (subMenu.controls.Count + customizer.droneExpMenu.controls.Count > 8) GUI.enabled = false;
-                                if (GUILayout.Button(name)) {
-
-                                    VRCExpressionsMenu.Control newControl = new VRCExpressionsMenu.Control();
-                                    newControl.subMenu = customizer.droneExpMenu;
-                                    newControl.name = customizer.droneExpName;
-                                    newControl.icon = customizer.droneExpIcon;
-                                    newControl.type = VRCExpressionsMenu.Control.ControlType.SubMenu;
-                                    subMenu.controls.Add(newControl);
-                                    EditorUtility.SetDirty(subMenu);
-                                    AssetDatabase.SaveAssets();
-                                    customizer.UpdateExpressionMenus();
-                                    break;
-                                }
-                                GUI.enabled = true;
+                    if (customizer.advancedMode == true) {
+                        #region WD Toggle
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label($"<b>The drone's Write Defaults are currently set to:</b>", label);
+                        if (GUILayout.Button((customizer.DroneWDState.HasFlag(AnimatorWDState.On) ? "Enabled" : "Disabled"))) {
+                            if (customizer.DroneWDState.HasFlag(AnimatorWDState.On)) {
+                                WDConverter.SetWriteDefaults(customizer.droneAnimationController, false);
+                                customizer.DroneWDState = AnimatorWDState.Off;
                             }
-                        } else {
-                            PFCGUI.HorizontalLine();
-                            //EditorGUILayout.BeginHorizontal();
-                            string menuName = "Main Menu";
-                            if (customizer.ExpressionMenus.ContainsKey(customizer.droneExpMenu)) {
-                                ExpressionMenuData menu = customizer.ExpressionMenus[customizer.droneExpMenu];
-                                if (menu.Parent != null) {
-                                    menuName = menu.Parent.Name;
-                                }
+                            else {
+                                WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
+                                customizer.DroneWDState = AnimatorWDState.On;
                             }
-                            GUILayout.Label($"<b>Menu is installed:{menuName}</b>", label);
-                            if (customizer.descriptor.expressionsMenu == customizer.droneExpMenu) GUI.enabled = false;
-                            if (GUILayout.Button("remove")) {
+                        }
+                        GUILayout.EndHorizontal();
+                        PFCGUI.HorizontalLine();
+                        PFCGUI.Spacer(1f);
+                        #endregion
+                    }
 
-                                VRCExpressionsMenu parent = customizer.ExpressionMenus[customizer.droneExpMenu].Parent.Menu;
-                                foreach (VRCExpressionsMenu.Control control in parent.controls) {
-                                    if (control.subMenu == customizer.droneExpMenu) {
-                                        parent.controls.Remove(control);
-                                        EditorUtility.SetDirty(parent);
-                                        AssetDatabase.SaveAssets();
-                                        break;
-                                    }
-                                }
+                    EasyImportButton(label, customizer.advancedMode);
+                    if (!customizer.ExpressionMenus.ContainsKey(customizer.droneExpMenu)) {
+                        PFCGUI.HorizontalLine();
+                        GUILayout.Label("<b>Import Menu</b>:\nPlease select which sub menu you'd like to have your drone menu placed in.", label);
+                        foreach (KeyValuePair<VRCExpressionsMenu, ExpressionMenuData> kvp in customizer.ExpressionMenus) {
+                            VRCExpressionsMenu subMenu = kvp.Key;
+                            string name = kvp.Value.Name;
+                            if (subMenu.controls.Count + customizer.droneExpMenu.controls.Count > 8) {
+                                GUI.enabled = false;
+                            }
+
+                            if (GUILayout.Button(name)) {
+
+                                VRCExpressionsMenu.Control newControl = new VRCExpressionsMenu.Control();
+                                newControl.subMenu = customizer.droneExpMenu;
+                                newControl.name = customizer.droneExpName;
+                                newControl.icon = customizer.droneExpIcon;
+                                newControl.type = VRCExpressionsMenu.Control.ControlType.SubMenu;
+                                subMenu.controls.Add(newControl);
+                                EditorUtility.SetDirty(subMenu);
+                                AssetDatabase.SaveAssets();
                                 customizer.UpdateExpressionMenus();
+                                break;
                             }
                             GUI.enabled = true;
-                            //EditorGUILayout.EndHorizontal();
                         }
                     }
+                    else {
+                        PFCGUI.HorizontalLine();
+                        //EditorGUILayout.BeginHorizontal();
+                        string menuName = "Main Menu";
+                        if (customizer.ExpressionMenus.ContainsKey(customizer.droneExpMenu)) {
+                            ExpressionMenuData menu = customizer.ExpressionMenus[customizer.droneExpMenu];
+                            if (menu.Parent != null) {
+                                menuName = menu.Parent.Name;
+                            }
+                        }
+                        GUILayout.Label($"<b>Menu is currently installed in: </b><color=cyan>{menuName}</color>", label);
+                        if (customizer.descriptor.expressionsMenu == customizer.droneExpMenu) {
+                            GUI.enabled = false;
+                        }
+
+                        if (GUILayout.Button("remove")) {
+
+                            VRCExpressionsMenu parent = customizer.ExpressionMenus[customizer.droneExpMenu].Parent.Menu;
+                            foreach (VRCExpressionsMenu.Control control in parent.controls) {
+                                if (control.subMenu == customizer.droneExpMenu) {
+                                    parent.controls.Remove(control);
+                                    EditorUtility.SetDirty(parent);
+                                    AssetDatabase.SaveAssets();
+                                    break;
+                                }
+                            }
+                            customizer.UpdateExpressionMenus();
+                        }
+                        GUI.enabled = true;
+                        //EditorGUILayout.EndHorizontal();
+                    }
+                    //}
                     #endregion
 
                     if (customizer.droneExpParameters != null) {
                         PFCGUI.HorizontalLine();
-                        GUILayout.Label("<b>Import Expression Paramters</b>\nNext up is the expression paramters.", label);
+                        GUILayout.Label("<b>Import Expression Parameters</b>\nNext up is the expression parameters.", label);
                         if (customizer.descriptor.expressionParameters == customizer.droneExpParameters) {
                             if (GUILayout.Button("Clear Parameters")) {
                                 customizer.descriptor.expressionParameters = null;
                             }
-                        } else if (customizer.descriptor.expressionParameters == null) {
+                        }
+                        else if (customizer.descriptor.expressionParameters == null) {
                             if (GUILayout.Button("Add Parameters")) {
                                 customizer.descriptor.expressionParameters = customizer.droneExpParameters;
                             }
 
-                        } else {
+                        }
+                        else {
                             bool HasParameters = false;
                             foreach (VRCExpressionParameters.Parameter DroneParam in customizer.droneExpParameters.parameters) {
                                 foreach (VRCExpressionParameters.Parameter AvatarParam in customizer.descriptor.expressionParameters.parameters) {
@@ -310,7 +353,8 @@ namespace PFCTools.Drone {
                                     EditorUtility.SetDirty(customizer.descriptor.expressionParameters);
                                     AssetDatabase.SaveAssets();
                                 }
-                            } else {
+                            }
+                            else {
                                 if (customizer.droneExpParameters.CalcTotalCost() < VRCExpressionParameters.MAX_PARAMETER_COST - customizer.descriptor.expressionParameters.CalcTotalCost()) {
                                     if (GUILayout.Button("Add Parameters")) {
                                         List<VRCExpressionParameters.Parameter> DescParamList = new List<VRCExpressionParameters.Parameter>(customizer.descriptor.expressionParameters.parameters);
@@ -322,7 +366,6 @@ namespace PFCTools.Drone {
                                             ClassCopier.Copy<VRCExpressionParameters.Parameter>(param, newParam);
                                             DescParamList.Add(newParam);
 
-
                                         }
 
                                         customizer.descriptor.expressionParameters.parameters = DescParamList.ToArray();
@@ -330,7 +373,8 @@ namespace PFCTools.Drone {
                                         AssetDatabase.SaveAssets();
 
                                     }
-                                } else {
+                                }
+                                else {
                                     GUI.enabled = false;
                                     GUILayout.Button("Parameter Limit Exceeded");
                                     GUI.enabled = true;
@@ -347,7 +391,8 @@ namespace PFCTools.Drone {
                             customizer.currentCustomizerWindow = CustomizerWindows.Customize;
                             customizer.name = "PFCDroneKit Customizer [" + customizer.Prefab.transform.parent.name + "]";
                         }
-                    } else {
+                    }
+                    else {
                         GUILayout.Label("<b>Close window</b>:\nOnce everything is removed you can close the menu.", label);
                         if (GUILayout.Button("Close")) {
                             DestroyImmediate(customizer.gameObject);
@@ -418,7 +463,8 @@ namespace PFCTools.Drone {
                         if (GUILayout.Button("Rotate Hud To Face Viewpoint")) {
                             customizer.RecalculateHudRotation();
                         }
-                    } else if (Selection.activeGameObject == customizer.DockOffset) { //IF dock is being edited
+                    }
+                    else if (Selection.activeGameObject == customizer.DockOffset) { //IF dock is being edited
                         EditorGUILayout.BeginHorizontal();
                         GUILayout.Label("Flip Screen Orientation");
                         if (GUILayout.Button("Left Handed")) {
@@ -452,11 +498,13 @@ namespace PFCTools.Drone {
                         EditorGUILayout.PrefixLabel("Hide Straps");
                         customizer.DockRenderer.SetBlendShapeWeight(4, EditorGUILayout.Slider(customizer.DockRenderer.GetBlendShapeWeight(4), 0, 100));
                         EditorGUILayout.EndHorizontal();
-                    } else if (Selection.activeGameObject == customizer.FollowPoint) {//if followpoint is being edited.
+                    }
+                    else if (Selection.activeGameObject == customizer.FollowPoint) {//if followpoint is being edited.
                         if (GUILayout.Button("Reset FollowPoint Position")) {
                             customizer.RecalculateFollowPoint();
                         }
-                    } else if (Selection.activeGameObject == customizer.SelfiePoint) {//If Selfiepoint is being edited.
+                    }
+                    else if (Selection.activeGameObject == customizer.SelfiePoint) {//If Selfiepoint is being edited.
                         GUILayout.BeginHorizontal();
                         EditorGUILayout.LabelField("Selfie Distance");
                         Vector3 pos = customizer.SelfiePoint.transform.position;
@@ -482,7 +530,8 @@ namespace PFCTools.Drone {
                         SelfieConstraint.SetSource(0, TargetSource);
                         GUILayout.EndHorizontal();
 
-                    } else if (Selection.activeGameObject == customizer.MapCutoff) {//If Selfiepoint is being edited.
+                    }
+                    else if (Selection.activeGameObject == customizer.MapCutoff) {//If Selfiepoint is being edited.
                         GUILayout.BeginHorizontal();
                         EditorGUILayout.LabelField("Minimap Cutoff Height");
                         Vector3 pos = customizer.MapCutoff.transform.position;
@@ -493,7 +542,8 @@ namespace PFCTools.Drone {
                         if (GUILayout.Button("Recalculate Camera Cutoff")) {
                             customizer.FixMinimapOffsets();
                         }
-                    } else { //IF drone is being edited
+                    }
+                    else { //IF drone is being edited
                         if (customizer.droneHasEmission()) {
                             customizer.droneEmissionColor = EditorGUILayout.ColorField("Drone Emission Color", customizer.droneEmissionColor);
                         }
@@ -515,17 +565,29 @@ namespace PFCTools.Drone {
 
                 GUILayout.Label($"Version: {customizer.versionManager.GetVersion()}", EditorStyles.toolbarButton);
                 if (customizer.versionManager.GetLatestVersion() != null) {
-                    if (customizer.versionManager.GetVersion() < customizer.versionManager.GetLatestVersion()) GUILayout.Label($"Latest Release: <Color=cyan>{customizer.versionManager.GetLatestVersion()}</color>", HighlightButton);
-                    if (customizer.versionManager.GetVersion() > customizer.versionManager.GetLatestVersion()) GUILayout.Label($"Latest Release: <Color=yellow>{customizer.versionManager.GetLatestVersion()}</color>", HighlightButton);
+                    if (customizer.versionManager.GetVersion() < customizer.versionManager.GetLatestVersion()) {
+                        GUILayout.Label($"Latest Release: <Color=cyan>{customizer.versionManager.GetLatestVersion()}</color>", HighlightButton);
+                    }
+
+                    if (customizer.versionManager.GetVersion() > customizer.versionManager.GetLatestVersion()) {
+                        GUILayout.Label($"Latest Release: <Color=yellow>{customizer.versionManager.GetLatestVersion()}</color>", HighlightButton);
+                    }
+
                     if ((customizer.versionManager.packageUrl != "" && customizer.versionManager.GetVersion() < customizer.versionManager.GetLatestVersion()) && GUILayout.Button("<color=cyan>Install</color>", HighlightButton)) {
                         //Application.OpenURL(PFCDroneInstaller.downloadURL);
-                        WebClient webclient = new WebClient();
-                        if (!AssetDatabase.IsValidFolder("Assets/Updates")) {
-                            AssetDatabase.CreateFolder("Assets", "Updates");
+                        bool certain = true;
+                        if (customizer.currentCustomizerWindow == CustomizerWindows.Customize) {
+                            certain = EditorUtility.DisplayDialog("Update Drone Files", "It is advised you remove your current drone install before you update to a new version to ensure the installer can remove the current installation properly.", "Update files", "Cancel");
                         }
-                        webclient.DownloadFile(customizer.versionManager.packageUrl, "Assets/Updates/PFCDroneKitUpdate.unitypackage");
-                        AssetDatabase.Refresh();
-                        AssetDatabase.ImportPackage("Assets/Updates/PFCDroneKitUpdate.unitypackage", true);
+                        if (certain) {
+                            WebClient webclient = new WebClient();
+                            if (!AssetDatabase.IsValidFolder("Assets/Updates")) {
+                                AssetDatabase.CreateFolder("Assets", "Updates");
+                            }
+                            webclient.DownloadFile(customizer.versionManager.packageUrl, "Assets/Updates/PFCDroneKitUpdate.unitypackage");
+                            AssetDatabase.Refresh();
+                            AssetDatabase.ImportPackage("Assets/Updates/PFCDroneKitUpdate.unitypackage", true);
+                        }
                     }
                 }
                 GUILayout.FlexibleSpace();
@@ -537,14 +599,14 @@ namespace PFCTools.Drone {
             }
         }
 
-        private void EasyImportButton(GUIStyle label, bool simpleMode) {
-            if (simpleMode) {
-                GUILayout.Label("<b>Importing Animator Data:</b>\n" + "Most of this step is automated for ease of use in Simple mode. Simply click the button below to import all animation layers.", label);
-            } else {
-                EditorGUILayout.BeginHorizontal();
+        private void EasyImportButton(GUIStyle label, bool advancedMode) {
+            if (!advancedMode) {
+                GUILayout.Label("<b>Import Animator Layers:</b>\n" + "Most of this step is automated for ease of use in Simple mode. Simply click the button below to import all animation layers.", label);
+            }
+            else {
+                GUILayout.BeginHorizontal();
                 GUILayout.Label("<b>Import Animator Layers:</b>", label);
             }
-
 
             AnimatorController FXLayer = customizer.GetFXLayer();
 
@@ -566,12 +628,14 @@ namespace PFCTools.Drone {
                         }
                     }
                 }
-            } else if (AnimatorLayerCopy.LayersExistIn(customizer.droneAnimationController, FXLayer)) {
+            }
+            else if (AnimatorLayerCopy.LayersExistIn(customizer.droneAnimationController, FXLayer)) {
                 if (FXLayer != customizer.droneAnimationController) {
                     if (GUILayout.Button("Remove Layers")) {
                         customizer.removeDroneAnimatorLayers();
                     }
-                } else {
+                }
+                else {
                     if (GUILayout.Button("Remove Animator")) {
                         for (int i = 0; i < customizer.descriptor.baseAnimationLayers.Length; i++) {
                             VRC.SDK3.Avatars.Components.VRCAvatarDescriptor.CustomAnimLayer layer = customizer.descriptor.baseAnimationLayers[i];
@@ -581,13 +645,20 @@ namespace PFCTools.Drone {
                         }
                     }
                 }
-            } else {
-                if (GUILayout.Button("Import")) {
-                    if (simpleMode) {
+            }
+            else {
+                if (GUILayout.Button(advancedMode ? "Auto Import" : "Import")) {
+                    if (!advancedMode) {
                         AnimatorWDState WDState = AnimatorHelper.GetWDState(customizer.GetFXLayer());
-                        if (WDState.HasFlag(AnimatorWDState.Mixed)) WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
-                        else if (WDState.HasFlag(AnimatorWDState.On)) WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
-                        else if (WDState.HasFlag(AnimatorWDState.Off)) WDConverter.SetWriteDefaults(customizer.droneAnimationController, false);
+                        if (WDState.HasFlag(AnimatorWDState.Mixed)) {
+                            WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
+                        }
+                        else if (WDState.HasFlag(AnimatorWDState.On)) {
+                            WDConverter.SetWriteDefaults(customizer.droneAnimationController, true);
+                        }
+                        else if (WDState.HasFlag(AnimatorWDState.Off)) {
+                            WDConverter.SetWriteDefaults(customizer.droneAnimationController, false);
+                        }
                     }
 
                     AnimatorLayerCopy.AnimatorControllerSource = customizer.droneAnimationController;
@@ -616,7 +687,33 @@ namespace PFCTools.Drone {
                     AnimatorLayerCopy.CopyAllParameters(ParameterDifferences);
                 };
             }
-            if (!simpleMode) EditorGUILayout.EndHorizontal();
+            if (advancedMode) {
+                #region Buttons
+                if (GUILayout.Button("Animator Layer Tools")) {
+                    AnimatorLayerCopy.ShowWindow();
+                    AnimatorLayerCopy.AnimatorControllerSource = customizer.droneAnimationController;
+                    if (customizer.descriptor.baseAnimationLayers[4].animatorController != null) {
+                        AnimatorLayerCopy.AnimatorControllerTarget = (AnimatorController)customizer.descriptor.baseAnimationLayers[4].animatorController;
+                    }
+
+                    AnimatorLayerCopy.ExpressionSource = customizer.droneExpParameters;
+                    if (customizer.descriptor.expressionParameters != null) {
+                        AnimatorLayerCopy.ExpressionTarget = customizer.descriptor.expressionParameters;
+                    }
+
+                    AnimatorLayerCopy.MenuSource = customizer.droneExpMenu;
+                    if (customizer.descriptor.expressionsMenu != null) {
+                        AnimatorLayerCopy.MenuTarget = customizer.descriptor.expressionsMenu;
+                    }
+
+                    AnimatorLayerCopy.ShowAnimatorMergeTools.target = true;
+                    AnimatorLayerCopy.ShowLayerMatches = true;
+                    AnimatorLayerCopy.ShowExpressionMergeTools.target = true;
+                    AnimatorLayerCopy.ShowMenuMergeTools.target = true;
+                }
+                EditorGUILayout.EndHorizontal();
+                #endregion
+            }
         }
 
         private void PageHeader(string[] entries) {
@@ -637,6 +734,12 @@ namespace PFCTools.Drone {
                 customizer.DroneWDState = DroneWDState;
                 customizer.FXWDState = FXWDState;
                 customizer.UpdateExpressionMenus();
+            }
+        }
+
+        private void OnDestroy() {
+            if (customizer != null && customizer.Prefab == null && customizer.gameObject != null) {
+                DestroyImmediate(customizer.gameObject);
             }
         }
     }

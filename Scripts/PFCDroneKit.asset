@@ -12,14 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c72fed0943b794eab6c959d76a1bd1, type: 3}
   m_Name: PFCDroneKit
   m_EditorClassIdentifier: 
-  nextVersion: 3.3.0.6
-  _version: 3.3.0.6
-  _latestVersion: 3.3.0.5
+  nextVersion: 3.3.0.9
+  nextVersionIsBeta: 0
+  _version: 3.3.0.9
+  _versionIsBeta: 0
+  _latestVersion: 3.3.0.8
   owner: brandonvdongen
   repo: PFC.DroneKit
-  token: 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
   FilePaths:
   - Assets/PFCTools
   - Assets/PFCDroneKit
-  changelog: 3.3.0.6 - Removed gesture manager. oops.
-  packageUrl: https://github.com/brandonvdongen/PFC.DroneKit/releases/download/3.3.0.5/PFCDroneKit.unitypackage
+  _currentChangelog: 3.3.0.8 \n- added support for beta builds. in the github helper.\n-
+    Upgraded the update system\n- Added new custom handles for moving the prefab
+    around\n- Bunch of little bug fixes
+  newChangelog: '3.3.0.9
+
+    - updated artifact naming scheme to include version
+    number.'
+  packageUrl: https://github.com/brandonvdongen/PFC.DroneKit/releases/download/3.3.0.8/PFCDroneKit.unitypackage
