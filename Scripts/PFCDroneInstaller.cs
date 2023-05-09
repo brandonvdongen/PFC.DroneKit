@@ -146,11 +146,7 @@ namespace PFCTools.Drone {
 
             Vector3 worldUp = Vector3.up;
             Quaternion cameraRotationOffset = Quaternion.Euler(20, 180, 0);
-
-            if (PrefabUtility.GetPrefabInstanceHandle(this.gameObject) != null) {
-                Debug.Log("Unpacking Prefab");
-                PrefabUtility.UnpackPrefabInstance(this.gameObject, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
-            }
+            UnpackPrefab();
             if (selectedMountPoint != (int)AdvancedMountPoints.SelectAMountPoint) {
                 if (advancedMode) {
                     if (selectedMountPoint == (int)AdvancedMountPoints.LeftArm) {
@@ -251,6 +247,13 @@ namespace PFCTools.Drone {
             }
         }
 
+        private void UnpackPrefab() {
+            if (PrefabUtility.GetPrefabInstanceHandle(this.gameObject) != null) {
+                Debug.Log("Unpacking Prefab");
+                PrefabUtility.UnpackPrefabInstance(this.gameObject, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+            }
+        }
+
         public void RecalculateFollowPoint() {
             Vector3 pos = DockOffset.transform.position;
             Transform headBone = animator.GetBoneTransform(HumanBodyBones.Head);
@@ -276,10 +279,8 @@ namespace PFCTools.Drone {
         }
 
         public void removeAllDroneComponents() {
-            //attemptToDestroy(gameObject);
+            UnpackPrefab();
             attemptToDestroy(Prefab);
-            attemptToDestroy(DockLink);
-            attemptToDestroy(HeadLink);
             Debug.Log("Cleared all dock components");
         }
 
