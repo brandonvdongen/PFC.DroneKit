@@ -7,11 +7,12 @@ using UnityEngine;
 using UnityEngine.Animations;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
+using VRC.SDKBase;
 
 namespace PFCTools.Drone {
 
     [ExecuteInEditMode]
-    public class PFCDroneInstaller : MonoBehaviour {
+    public class PFCDroneInstaller : MonoBehaviour, IEditorOnly {
 
         public PFCAssetVersionManager versionManager;
 
@@ -220,7 +221,8 @@ namespace PFCTools.Drone {
                 Prefab.transform.localRotation = Quaternion.identity;
                 Prefab.transform.localScale = Vector3.one;
 
-                transform.parent = null;
+                transform.parent = descriptor.transform;
+
                 Transform bone = animator.GetBoneTransform(HumanBodyBones.Head);
                 ParentConstraint HeadConstraint = HeadLink.GetComponent<ParentConstraint>();
                 if (HeadConstraint.sourceCount == 0) {
