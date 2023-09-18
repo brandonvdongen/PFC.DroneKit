@@ -133,6 +133,7 @@ namespace PFCTools.Drone {
 
                 foreach (VRCExpressionsMenu.Control control in menu.controls) {
                     if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu) {
+                        if (control.subMenu == null) continue;
                         GetExpressionMenus(control.name, data, control.subMenu);
                     }
                 }
